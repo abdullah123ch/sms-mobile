@@ -1,7 +1,7 @@
 // app/(tabs)/student/grades/detailed.tsx
 import DetailedHeader from "@/components/results/DetailedHeader";
 import GradeDetails from "@/components/results/GradeDetails";
-import SubjectScroller from "@/components/results/SubjectScroller";
+import SubjectScroller from "@/components/Scroller";
 import {
   mockCourseGrades,
   mockPerformanceMetrics,
@@ -45,9 +45,20 @@ export default function DetailedGradesPage() {
 
       {/* Subject scroller */}
       <SubjectScroller
-        subjects={subjects}
+        items={subjects.map((subject) => ({
+          id: subject.courseId,
+          title: subject.courseName,
+          count: subject.completedAssignments,
+          currentGrade: subject.currentGrade,
+          letterGrade: subject.letterGrade,
+        }))}
         selectedIndex={selectedSubjectIndex}
-        onSubjectChange={setSelectedSubjectIndex}
+        onItemChange={setSelectedSubjectIndex}
+        showCount={true}
+        countKey="count"
+        showDots={false}
+        color="#111827"
+        backgroundColor="#f9fafb"
       />
 
       {/* Content */}
