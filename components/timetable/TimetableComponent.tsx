@@ -1,3 +1,4 @@
+// components/timetable/TimetableComponent.tsx
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import {
@@ -13,16 +14,13 @@ import {
   DaySchedule,
   TimetableComponentProps,
 } from "../../types/timetable";
-import DayNavigation from "./DayNavigation";
+import SubjectScroller from "../Scroller";
 import SessionCard from "./SessionCard";
-import TimetableHeader from "./TimetableHeader";
 
 const TimetableComponent: React.FC<TimetableComponentProps> = ({
   data,
   type = "student",
   title = "Timetable",
-  subtitle = "View your weekly schedule",
-  showStats = false,
   onSessionClick,
   onExport,
 }) => {
@@ -48,28 +46,6 @@ const TimetableComponent: React.FC<TimetableComponentProps> = ({
     onExport?.();
   };
 
-  // Loop through days continuously
-  const goToPreviousDay = () => {
-    setSelectedDayIndex((prev) => {
-      if (prev === 0) {
-        return totalDays - 1;
-      } else {
-        return prev - 1;
-      }
-    });
-  };
-
-  // Loop through days continuously
-  const goToNextDay = () => {
-    setSelectedDayIndex((prev) => {
-      if (prev === totalDays - 1) {
-        return 0;
-      } else {
-        return prev + 1;
-      }
-    });
-  };
-
   const getCurrentDay = (): DaySchedule => {
     const day = currentWeek.days[selectedDayIndex];
     if (!day) {
@@ -80,10 +56,6 @@ const TimetableComponent: React.FC<TimetableComponentProps> = ({
       };
     }
     return day;
-  };
-
-  const getCurrentDayName = (): string => {
-    return dayNames[selectedDayIndex];
   };
 
   const isCurrentSession = (
@@ -111,16 +83,43 @@ const TimetableComponent: React.FC<TimetableComponentProps> = ({
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
-      {/* Header - Updated without current day */}
-      <TimetableHeader title={title}/>
+      {/* White Header Section - Matching Books page */}
+      <View style={styles.header}>
+        <View style={styles.headerTop}>
+          <View>
+            <Text style={styles.title}>
+              {title}
+            </Text>
+            <Text style={styles.subtitle}>
+              View your weekly schedule
+            </Text>
+          </View>
+          
+          {/* Optional: Add an action button like the PTCB button in Books page */}
+          {/* <TouchableOpacity
+            style={styles.headerButton}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="calendar-outline" size={18} color="white" />
+          </TouchableOpacity> */}
+        </View>
 
-      {/* Day Navigation with Loop */}
-      <DayNavigation
-        currentDay={getCurrentDayName()}
-        onPrevious={goToPreviousDay}
-        onNext={goToNextDay}
-        showLoop={true}
-      />
+        {/* Day Navigation using SubjectScroller */}
+        <SubjectScroller
+          items={currentWeek.days.map((day, index) => ({
+            id: `day-${index}`,
+            title: day.day,
+            count: day.sessions?.length || 0,
+          }))}
+          selectedIndex={selectedDayIndex}
+          onItemChange={setSelectedDayIndex}
+          showCount={true}
+          countKey="count"
+          showDots={false}
+          color="#111827"
+          backgroundColor="#f9fafb"
+        />
+      </View>
 
       {/* Sessions List */}
       <ScrollView
@@ -162,35 +161,65 @@ const TimetableComponent: React.FC<TimetableComponentProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F9FAFB",
+    backgroundColor: "#f9fafb", // Changed to match Books page background
+  },
+  // White Header Section - Exactly like Books page
+  header: {
+    backgroundColor: '#ffffff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb',
+    padding: 16,
+  },
+  headerTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 16,
+  },
+  title: {
+    fontSize: 30,
+    fontWeight: "bold",
+    color: "#111827",
+    marginBottom: 8,
+    letterSpacing: -0.5,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: "#6b7280",
+    lineHeight: 24,
+  },
+  headerButton: {
+    backgroundColor: '#16a34a',
+    padding: 8,
+    borderRadius: 8,
   },
   scrollView: {
     flex: 1,
   },
   sessionsContainer: {
-    padding: 20,
+    padding: 16, // Reduced from 20 to match Books page padding
   },
   emptyState: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 48, // Reduced from 60 to match Books page
   },
   emptyIcon: {
-    backgroundColor: "#F0FDF4",
+    backgroundColor: '#F0FDF4',
     padding: 20,
     borderRadius: 50,
     marginBottom: 20,
   },
   emptyTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#374151",
+    fontSize: 16, // Reduced from 18 to be consistent
+    fontWeight: '600',
+    color: '#374151',
     marginBottom: 8,
   },
   emptySubtitle: {
     fontSize: 14,
-    color: "#6B7280",
-    textAlign: "center",
+    color: '#6B7280',
+    textAlign: 'center',
   },
 });
 
