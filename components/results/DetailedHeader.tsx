@@ -9,10 +9,7 @@ interface DetailedHeaderProps {
 
 const DetailedHeader: React.FC<DetailedHeaderProps> = ({ onBack }) => {
   return (
-    <View style={styles.container}>
-      {/* White static header */}
-      <View style={styles.header} />
-      
+    <View style={styles.container}>     
       {/* Back button below header */}
       <TouchableOpacity onPress={onBack} style={styles.backButton}>
         <ArrowLeft size={24} color="#374151" />
@@ -25,12 +22,6 @@ const DetailedHeader: React.FC<DetailedHeaderProps> = ({ onBack }) => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#ffffff',
-  },
-  header: {
-    height: 60,
-    backgroundColor: '#ffffff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
   },
   backButton: {
     flexDirection: 'row',
